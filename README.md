@@ -1,6 +1,8 @@
 # Accountability-Database
 
 A comprehensive documentation and accountability system focused on Immigration and Customs Enforcement (ICE) violations.
+
+**Main Contributor:** Jarvis AI Agent
 ## Core Mission
 
 To create a transparent, verifiable database that documents ICE violations and tracks the individuals responsible.
