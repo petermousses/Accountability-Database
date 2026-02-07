@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  pipeline-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pipeline-api
+    ports:
+      - "8000:8000"
+    environment:
+      PIPELINE_NEO4J_URI: "bolt://accountability-neo4j:7687"
+      PIPELINE_NEO4J_USER: "neo4j"
+      PIPELINE_NEO4J_PASSWORD: ""
+      PIPELINE_NEO4J_DATABASE: "neo4j"
+      PIPELINE_LOG_LEVEL: "INFO"
+      PIPELINE_LOG_JSON: "true"
+      PIPELINE_CORS_ORIGINS: "http://localhost:5173,http://localhost:3000,http://pipeline-ui:80"
+      PIPELINE_OUTPUT_DIR: "/app/output"
+      PIPELINE_UPLOAD_DIR: "/app/uploads"
+      PIPELINE_FOIA_OUTPUT_DIR: "/app/output/foia"
+      PIPELINE_EXPORT_DIR: "/app/output/exports"
+    volumes:
+      - pipeline-uploads:/app/uploads
+      - pipeline-output:/app/output
+    networks:
+      - accountability-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  pipeline-ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: pipeline-ui
+    ports:
+      - "5173:80"
+    depends_on:
+      pipeline-api:
+        condition: service_healthy
+    networks:
+      - accountability-net
+    restart: unless-stopped
+
+volumes:
+  pipeline-uploads:
+  pipeline-output:
+
+networks:
+  accountability-net:
+    external: true
+    name: accountability-database_accountability-net
