@@ -1,0 +1,34 @@
+version: 3.8
+
+services:
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: accountability-neo4j
+    environment:
+      NEO4J_AUTH: "none"  # Authentication disabled for now, can be enabled later
+      NEO4J_dbms_memory_heap_initial__size: "2G"
+      NEO4J_dbms_memory_heap_max__size: "4G"
+      NEO4J_dbms_memory_pagecache_size: "2G"
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      # NAS-mounted volumes for data persistence
+      - /mnt/nas/accountability-db/data:/var/lib/neo4j/data
+      - /mnt/nas/accountability-db/logs:/var/lib/neo4j/logs
+      - /mnt/nas/accountability-db/conf:/var/lib/neo4j/conf
+      # Initialization scripts (optional, for initial schema setup)
+      - ./init-scripts:/var/lib/neo4j/init:ro
+    networks:
+      - accountability-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  accountability-net:
+    driver: bridge
