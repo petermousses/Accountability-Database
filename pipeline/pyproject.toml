@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "accountability-pipeline"
+version = "0.1.0"
+description = "FOIA data processing pipeline for ICE accountability knowledge graph"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "rapidfuzz>=3.5.0",
+    "spacy>=3.7.0",
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.25.0",
+    "jinja2>=3.1.0",
+    "pandas>=2.1.0",
+    "structlog>=24.1.0",
+    "python-multipart>=0.0.6",
+    "httpx>=0.26.0",
+    "python-dateutil>=2.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.23.0",
+    "coverage>=7.4.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["accountability_pipeline", "workflow", "api"]
+omit = ["tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
